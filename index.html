@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TaDa! — Pre-loved, re-loved.</title>
+<style>
+:root{--ink:#202124;--yellow:#ffc928;--soft:#fff9e9;--muted:#6b7280}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:var(--ink);background:#fff}
+header{border-bottom:1px solid #eee;position:sticky;top:0;background:white;z-index:3}
+.top{max-width:1120px;margin:auto;padding:17px 20px;display:flex;align-items:center;gap:25px}
+.logo{font-size:34px;font-weight:900;letter-spacing:-2px;white-space:nowrap}.logo span{color:#f4b900}
+nav{display:flex;gap:18px;flex:1}a{color:inherit;text-decoration:none}nav a{font-weight:600;font-size:14px}
+button{font:inherit;cursor:pointer;border:0}.primary{background:var(--yellow);color:#171717;border-radius:24px;font-weight:800;padding:12px 20px}
+.ghost{background:white;border:1px solid #ddd;padding:11px 18px;border-radius:24px}
+main{max-width:1120px;margin:auto;padding:22px 20px 70px}
+.hero{background:var(--soft);border-radius:24px;padding:52px 42px;position:relative;overflow:hidden}
+.hero:after{content:"✦";position:absolute;font-size:180px;color:var(--yellow);right:50px;top:10px;transform:rotate(-12deg)}
+h1{font-size:clamp(33px,5vw,60px);margin:0 0 12px;letter-spacing:-2px;position:relative;z-index:1}
+.hero p{font-size:18px;max-width:480px;line-height:1.5;position:relative;z-index:1}
+.search{display:flex;gap:10px;margin:28px 0 22px}.search input{width:100%;padding:16px 20px;border-radius:30px;border:1px solid #ddd;font-size:16px;outline:none}.search input:focus{border-color:#dba900}
+.categories{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 35px}.chip{border:1px solid #e5e5e5;background:#fff;border-radius:25px;padding:10px 15px}.chip.active{background:var(--ink);color:white;border-color:var(--ink)}
+.heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}h2{margin:0;font-size:25px}.muted{color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:19px}
+.card{border:1px solid #ededed;border-radius:17px;overflow:hidden;background:#fff;transition:transform .15s}.card:hover{transform:translateY(-3px)}
+.photo{height:170px;display:grid;place-items:center;font-size:70px;background:#f3f4f6}
+.details{padding:14px}.details h3{font-size:15px;margin:0 0 9px}.price{font-size:21px;font-weight:900;margin-bottom:8px}.location{color:var(--muted);font-size:13px}
+.card-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:12px}.heart{background:#f5f5f5;border-radius:50%;height:33px;width:33px;font-size:18px}.heart.saved{background:#fff0b7}
+footer{text-align:center;padding:28px;border-top:1px solid #eee;color:#6b7280;font-size:13px}
+.modal{position:fixed;inset:0;background:#0009;z-index:5;display:none;place-items:center;padding:20px}.modal.show{display:grid}
+.dialog{width:min(440px,100%);background:white;padding:28px;border-radius:20px}.dialog h2{margin:0 0 10px}.dialog p{line-height:1.6}.dialog button{margin-top:8px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}nav{display:none}.hero:after{opacity:.25}.hero{padding:35px 24px}.top{justify-content:space-between}}
+@media(max-width:440px){.grid{gap:10px}.photo{height:130px;font-size:55px}.details{padding:10px}.top{gap:8px}.primary{padding:10px 14px}.logo{font-size:29px}.search{gap:6px}}
+</style>
+</head>
+<body>
+<header><div class="top"><a class="logo" href="#">TaDa<span>!</span></a><nav><a href="#items">Discover</a><a href="#categories">Categories</a><a href="#about">About</a></nav><button class="ghost" onclick="showInfo('Accounts will be available in a later version.')">Log in</button><button class="primary" onclick="showInfo('Publishing items will be available after we connect a database.')">+ Sell an item</button></div></header>
+<main>
+<section class="hero"><h1>Good finds.<br>New stories<span style="color:#f4b900">!</span></h1><p>Buy and sell pre-loved treasures around Sydney. Less waste, more wonderful finds.</p><a href="#items"><button class="primary">Explore items ↗</button></a></section>
+<div class="search"><input id="search" placeholder="Search furniture, books, electronics..." aria-label="Search products"><button class="primary" onclick="render()">Search</button></div>
+<div class="categories" id="categories"></div>
+<div class="heading" id="items"><h2>Fresh finds ✨</h2><span class="muted" id="count"></span></div>
+<div class="grid" id="grid"></div>
+<section id="about" style="margin-top:60px;background:#fafafa;padding:28px;border-radius:18px"><h2>Pass it on with TaDa!</h2><p class="muted">A community marketplace concept for Sydney. This page currently contains sample listings only.</p></section>
+</main>
+<footer>© 2026 TaDa! · Pre-loved, re-loved. · Demo website</footer>
+<div class="modal" id="modal" onclick="if(event.target===this)closeInfo()"><div class="dialog" role="dialog" aria-modal="true"><h2>Coming soon!</h2><p id="message"></p><button class="primary" onclick="closeInfo()">Got it</button></div></div>
+<script>
+const items=[
+{name:'IKEA Study Desk',price:45,area:'Waterloo',cat:'Furniture',emoji:'🪑',bg:'#f1ece6'},
+{name:'Vintage Digital Camera',price:120,area:'Ultimo',cat:'Electronics',emoji:'📷',bg:'#e8f0f3'},
+{name:'Uni Textbooks Bundle',price:25,area:'Camperdown',cat:'Books',emoji:'📚',bg:'#f8ede2'},
+{name:'Coffee Machine',price:65,area:'Zetland',cat:'Home',emoji:'☕',bg:'#f3ecea'},
+{name:'Desk Lamp',price:18,area:'Newtown',cat:'Home',emoji:'💡',bg:'#f9f2d8'},
+{name:'Tennis Racket',price:40,area:'Chatswood',cat:'Sports',emoji:'🎾',bg:'#e8f4de'},
+{name:'Winter Jacket',price:35,area:'Haymarket',cat:'Fashion',emoji:'🧥',bg:'#eaeafb'},
+{name:'Bluetooth Speaker',price:30,area:'Surry Hills',cat:'Electronics',emoji:'🔊',bg:'#e7f2f0'}
+];
+const cats=['All','Furniture','Electronics','Books','Home','Fashion','Sports'];let selected='All';const saved=new Set();
+function render(){
+ document.getElementById('categories').innerHTML=cats.map(c=>`<button class="chip ${selected===c?'active':''}" onclick="selectCat('${c}')">${c}</button>`).join('');
+ const q=document.getElementById('search').value.toLowerCase().trim();const filtered=items.filter(x=>(selected==='All'||x.cat===selected)&&(`${x.name} ${x.area} ${x.cat}`.toLowerCase().includes(q)));
+ document.getElementById('count').textContent=`${filtered.length} items`;
+ document.getElementById('grid').innerHTML=filtered.length?filtered.map(x=>`<article class="card"><div class="photo" style="background:${x.bg}" aria-hidden="true">${x.emoji}</div><div class="details"><h3>${x.name}</h3><div class="price">A$${x.price}</div><div class="location">📍 ${x.area}, Sydney</div><div class="card-bottom"><span class="muted">Pre-loved</span><button class="heart ${saved.has(x.name)?'saved':''}" aria-label="Save item" onclick="toggleSave('${x.name}')">${saved.has(x.name)?'♥':'♡'}</button></div></div></article>`).join(''):'<p>No items found. Try another search.</p>';
+}
+function selectCat(c){selected=c;render()}function toggleSave(n){saved.has(n)?saved.delete(n):saved.add(n);render()}
+function showInfo(t){document.getElementById('message').textContent=t;document.getElementById('modal').classList.add('show')}function closeInfo(){document.getElementById('modal').classList.remove('show')}
+document.getElementById('search').addEventListener('input',render);render();
+</script>
+</body>
+</html>
